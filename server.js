@@ -255,7 +255,8 @@ app.post("/api/escanear", async (req, res) => {
     const viajeNombre = String(req.body.viaje || "").trim();
 
     const codeInput = String(req.body.barcode || "")
-      .replace(/[^\d]/g, "")
+      .replace(/[^A-Za-z0-9]/g, "")
+.toUpperCase()
       .trim();
 
     if (!viajeNombre) {
