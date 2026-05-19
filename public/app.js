@@ -1407,9 +1407,12 @@ function encolarCodigo(codigoRaw) {
   if (!codigo) return;
 
   const esNumero = /^\d{2,}$/.test(codigo);
-  const esLetraNumero = /^[A-Z]\d$/.test(codigo);
 
-  if (!esNumero && !esLetraNumero) {
+  // Acepta letra + número + cualquier cantidad de números después
+  // Ejemplos válidos: A2, A2123, A399999, B14567
+  const esLetraNumeroConSerial = /^[A-Z]\d+$/i.test(codigo);
+
+  if (!esNumero && !esLetraNumeroConSerial) {
     setStatus(`Código inválido: ${codigo}`, "warn");
     return;
   }
@@ -1417,7 +1420,6 @@ function encolarCodigo(codigoRaw) {
   colaCodigos.push(codigo);
   procesarColaCodigos();
 }
-
 async function procesarColaCodigos() {
   if (lectorProcesando) return;
 

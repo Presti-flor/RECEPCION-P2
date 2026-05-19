@@ -78,17 +78,23 @@ function parseCode(codeRaw) {
     .trim();
 
   const esNumero = /^\d{2,}$/.test(code);
-  const esLetraNumero = /^[A-Z]\d$/.test(code);
 
-  if (!esNumero && !esLetraNumero) {
+  // Letra + número + serial opcional
+  // Ejemplo: A212345 => tipo A2, serial 12345
+  const esLetraNumeroConSerial = /^[A-Z]\d+$/i.test(code);
+
+  if (!esNumero && !esLetraNumeroConSerial) {
     throw new Error("Barcode inválido");
   }
 
-  if (esLetraNumero) {
+  if (esLetraNumeroConSerial && /^[A-Z]\d/.test(code)) {
+    const tipo = code.slice(0, 2);
+    const serial = code.slice(2);
+
     return {
       barcode: code,
-      tipo: code,
-      serial: code.slice(1)
+      tipo,
+      serial
     };
   }
 
