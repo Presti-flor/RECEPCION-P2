@@ -1386,9 +1386,9 @@ function usuarioEstaEditandoCampo() {
   return false;
 }
 
-function obtenerNumeroDesdeTecla(e) {
-  if (/^\d$/.test(e.key)) {
-    return e.key;
+function obtenerCaracterDesdeTecla(e) {
+  if (/^[a-zA-Z0-9]$/.test(e.key)) {
+    return e.key.toUpperCase();
   }
 
   if (/^Numpad\d$/.test(e.code)) {
@@ -1400,13 +1400,17 @@ function obtenerNumeroDesdeTecla(e) {
 
 function encolarCodigo(codigoRaw) {
   const codigo = String(codigoRaw || "")
-    .replace(/[^\d]/g, "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase()
     .trim();
 
   if (!codigo) return;
 
-  if (codigo.length < 2) {
-    setStatus(`Código demasiado corto: ${codigo}`, "warn");
+  const esNumero = /^\d{2,}$/.test(codigo);
+  const esLetraNumero = /^[A-Z]\d$/.test(codigo);
+
+  if (!esNumero && !esLetraNumero) {
+    setStatus(`Código inválido: ${codigo}`, "warn");
     return;
   }
 
@@ -1440,16 +1444,16 @@ document.addEventListener("keydown", async (e) => {
 
   if (usuarioEstaEditandoCampo()) return;
 
-  const numero = obtenerNumeroDesdeTecla(e);
+  const caracter = obtenerCaracterDesdeTecla(e);
 
-  if (numero !== null) {
-    e.preventDefault();
+if (caracter !== null) {
+  e.preventDefault();
 
-    lectorBuffer += numero;
-    mostrarLectorGlobal();
+  lectorBuffer += caracter;
+  mostrarLectorGlobal();
 
-    return;
-  }
+  return;
+}
 
   if (e.key === "Backspace") {
     if (!lectorBuffer) return;
@@ -1490,8 +1494,8 @@ document.addEventListener("keydown", async (e) => {
 if (barcodeInput) {
   barcodeInput.addEventListener("input", () => {
     const valor = String(barcodeInput.value || "")
-      .replace(/[^\d]/g, "");
-
+  .replace(/[^A-Za-z0-9]/g, "")
+  .toUpperCase();
     if (!valor) return;
 
     lectorBuffer = valor;

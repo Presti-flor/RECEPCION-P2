@@ -72,16 +72,31 @@ function asegurarViaje(nombre) {
 // =====================================================
 
 function parseCode(codeRaw) {
-  const code = String(codeRaw || "").trim();
+  const code = String(codeRaw || "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase()
+    .trim();
 
-  if (!/^[A-Za-z0-9]{3,}$/.test(code)) {
+  const esNumero = /^\d{2,}$/.test(code);
+  const esLetraNumero = /^[A-Z]\d$/.test(code);
+
+  if (!esNumero && !esLetraNumero) {
     throw new Error("Barcode inválido");
   }
 
-  const tipo = code.slice(0, 2);
-  const serial = code.slice(2);
+  if (esLetraNumero) {
+    return {
+      barcode: code,
+      tipo: code,
+      serial: code.slice(1)
+    };
+  }
 
-  return { barcode: code, tipo, serial };
+  return {
+    barcode: code,
+    tipo: code.slice(0, 2),
+    serial: code.slice(2)
+  };
 }
 
 function sumarAcumulado(viaje, resultado) {
